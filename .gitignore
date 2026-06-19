@@ -1,15 +1,29 @@
+# Gradle files
+.gradle/
+build/
+
+# IDE files
 *.iml
-.gradle
-/local.properties
+.idea/
+# Specifically for Android Studio/IntelliJ
 /.idea/caches
 /.idea/libraries
 /.idea/modules.xml
 /.idea/workspace.xml
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
+
+# Local configuration (API keys, SDK paths)
+local.properties
+
+# OS files
 .DS_Store
-/build
+Thumbs.db
+
+# Android-specific
 /captures
 .externalNativeBuild
 .cxx
-local.properties
+
+# Kotlin generated files
+.kotlin/
