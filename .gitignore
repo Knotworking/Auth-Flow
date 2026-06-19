@@ -5,13 +5,6 @@ build/
 # IDE files
 *.iml
 .idea/
-# Specifically for Android Studio/IntelliJ
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
 
 # Local configuration (API keys, SDK paths)
 local.properties
