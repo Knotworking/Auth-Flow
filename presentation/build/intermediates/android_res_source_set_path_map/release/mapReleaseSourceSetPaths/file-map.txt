@@ -1,0 +1,9 @@
+com.knotworking.authexample.presentation-pngs-0 /Users/ben/AndroidStudioProjects/AuthExample/presentation/build/generated/res/pngs/release
+com.knotworking.authexample.presentation-updated_navigation_xml-1 /Users/ben/AndroidStudioProjects/AuthExample/presentation/build/generated/updated_navigation_xml/release
+com.knotworking.authexample.presentation-mergeReleaseResources-2 /Users/ben/AndroidStudioProjects/AuthExample/presentation/build/intermediates/incremental/release/mergeReleaseResources/merged.dir
+com.knotworking.authexample.presentation-mergeReleaseResources-3 /Users/ben/AndroidStudioProjects/AuthExample/presentation/build/intermediates/incremental/release/mergeReleaseResources/stripped.dir
+com.knotworking.authexample.presentation-release-4 /Users/ben/AndroidStudioProjects/AuthExample/presentation/build/intermediates/merged_res/release/mergeReleaseResources
+com.knotworking.authexample.presentation-release-5 /Users/ben/AndroidStudioProjects/AuthExample/presentation/build/intermediates/packaged_res/release/packageReleaseResources
+com.knotworking.authexample.presentation-main-6 /Users/ben/AndroidStudioProjects/AuthExample/presentation/src/main/res
+com.knotworking.authexample.presentation-release-7 /Users/ben/AndroidStudioProjects/AuthExample/presentation/src/release/res
+gradleHome-0 /Users/ben/.gradle
