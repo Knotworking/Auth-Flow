@@ -9,6 +9,8 @@ import com.knotworking.authexample.domain.usecase.LogoutUseCase
 import com.knotworking.authexample.domain.usecase.ObserveAuthStateUseCase
 import com.knotworking.authexample.domain.usecase.PerformProtectedOperationUseCase
 import com.knotworking.authexample.domain.usecase.RemoveUserUseCase
+import com.knotworking.authexample.domain.usecase.ObserveTokensUseCase
+import com.knotworking.authexample.domain.usecase.ObserveUsersUseCase
 import com.knotworking.authexample.domain.usecase.RevokeTokenUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
@@ -20,8 +22,10 @@ val domainModule = module {
     factoryOf(::GetCurrentUserUseCase)
     factoryOf(::PerformProtectedOperationUseCase)
     factoryOf(::GetUsersUseCase)
+    factoryOf(::ObserveUsersUseCase)
     factoryOf(::AddUserUseCase)
     factoryOf(::RemoveUserUseCase)
     factoryOf(::GetTokensUseCase)
+    factoryOf(::ObserveTokensUseCase)
     factoryOf(::RevokeTokenUseCase)
 }

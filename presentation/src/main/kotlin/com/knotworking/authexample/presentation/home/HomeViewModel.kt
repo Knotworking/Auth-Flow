@@ -20,7 +20,18 @@ class HomeViewModel(
 ) {
 
     init {
-        loadSession()
+        viewModelScope.launch {
+            sessionStore.sessionFlow.collect { session ->
+                val username = getCurrentUser()?.username ?: ""
+                updateState {
+                    copy(
+                        username = username,
+                        accessToken = session?.accessToken ?: "",
+                        accessExpiresAt = session?.accessExpiresAt,
+                    )
+                }
+            }
+        }
     }
 
     override fun onIntent(intent: HomeContract.Intent) {
@@ -31,33 +42,12 @@ class HomeViewModel(
         }
     }
 
-    private fun loadSession() {
-        viewModelScope.launch {
-            val username = getCurrentUser()?.username ?: ""
-            val session = sessionStore.read()
-            updateState {
-                copy(
-                    username = username,
-                    accessToken = session?.accessToken ?: "",
-                    accessExpiresAt = session?.accessExpiresAt,
-                )
-            }
-        }
-    }
-
     private fun handlePerformOperation() {
-        if (state.value.isOperationLoading) {
-            //TODO log that operation is already running
-            return
-        }
+        if (state.value.isOperationLoading) return
         updateState { copy(isOperationLoading = true, error = null, operationResult = null) }
         viewModelScope.launch {
             when (val result = performProtectedOperation()) {
-                is AppResult.Success -> {
-                    updateState { copy(isOperationLoading = false, operationResult = result.data) }
-                    //TODO when usecases return flow, then don't need to explicitly reload data
-                    loadSession() // refresh token display after potential refresh
-                }
+                is AppResult.Success -> updateState { copy(isOperationLoading = false, operationResult = result.data) }
                 is AppResult.Failure -> {
                     val message = when (result.error) {
                         AppError.Auth.Unauthorized,
