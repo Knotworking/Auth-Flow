@@ -40,6 +40,7 @@ val dataModule = module {
         )
     }
     single { FakeBackend(store = get(), logger = get()) }
+    single(createdAtStart = true) { FakeBackendInitializer(store = get(), backend = get(), logger = get()) }
 
     // Encrypted session storage + auth state
     single { CryptoManager() }
