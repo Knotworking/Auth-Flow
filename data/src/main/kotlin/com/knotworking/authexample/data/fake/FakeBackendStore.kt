@@ -1,6 +1,6 @@
 package com.knotworking.authexample.data.fake
 
-import com.knotworking.authexample.domain.Logger
+import com.knotworking.authexample.core.Logger
 import com.knotworking.authexample.domain.model.TokenInfo
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString

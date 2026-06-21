@@ -24,6 +24,7 @@ kotlin {
 
 dependencies {
     implementation(project(":domain"))
+    implementation(project(":core"))
 
     implementation(libs.koin.core)
     implementation(libs.koin.android)

@@ -3,7 +3,7 @@ package com.knotworking.authexample.data.network.authenticator
 import com.knotworking.authexample.data.network.api.AuthApi
 import com.knotworking.authexample.data.network.dto.RefreshRequestDto
 import com.knotworking.authexample.data.network.mapper.withRefreshedToken
-import com.knotworking.authexample.domain.Logger
+import com.knotworking.authexample.core.Logger
 import com.knotworking.authexample.domain.repository.AuthStateObserver
 import com.knotworking.authexample.domain.repository.SessionStore
 import kotlinx.coroutines.runBlocking

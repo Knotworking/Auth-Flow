@@ -1,6 +1,6 @@
 package com.knotworking.authexample.data.storage
 
-import com.knotworking.authexample.domain.Logger
+import com.knotworking.authexample.core.Logger
 import com.knotworking.authexample.domain.model.AuthState
 import com.knotworking.authexample.domain.model.User
 import com.knotworking.authexample.domain.repository.AuthStateObserver

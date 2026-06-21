@@ -1,6 +1,6 @@
 package com.knotworking.authexample.data.fake
 
-import com.knotworking.authexample.domain.Logger
+import com.knotworking.authexample.core.Logger
 import okhttp3.mockwebserver.MockWebServer
 
 class FakeBackend(

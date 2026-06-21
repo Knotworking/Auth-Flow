@@ -1,6 +1,6 @@
 package com.knotworking.authexample.data.network.interceptor
 
-import com.knotworking.authexample.domain.Logger
+import com.knotworking.authexample.core.Logger
 import com.knotworking.authexample.domain.repository.SessionStore
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor

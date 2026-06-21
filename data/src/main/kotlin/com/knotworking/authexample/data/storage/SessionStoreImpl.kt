@@ -6,7 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.knotworking.authexample.domain.Logger
+import com.knotworking.authexample.core.Logger
 import com.knotworking.authexample.domain.model.AuthSession
 import com.knotworking.authexample.domain.repository.SessionStore
 import kotlinx.coroutines.flow.Flow

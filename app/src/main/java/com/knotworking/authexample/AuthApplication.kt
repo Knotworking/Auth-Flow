@@ -1,10 +1,11 @@
 package com.knotworking.authexample
 
 import android.app.Application
+import com.knotworking.authexample.core.Logger
+import com.knotworking.authexample.core.di.coreModule
 import com.knotworking.authexample.data.di.dataModule
 import com.knotworking.authexample.data.fake.FakeBackend
 import com.knotworking.authexample.data.fake.FakeBackendStore
-import com.knotworking.authexample.domain.Logger
 import com.knotworking.authexample.domain.di.domainModule
 import com.knotworking.authexample.presentation.di.presentationModule
 import kotlinx.coroutines.CoroutineScope
@@ -21,7 +22,7 @@ class AuthApplication : Application() {
 
         val koin = startKoin {
             androidContext(this@AuthApplication)
-            modules(domainModule, dataModule, presentationModule)
+            modules(coreModule, domainModule, dataModule, presentationModule)
         }.koin
 
         val logger = koin.get<Logger>()

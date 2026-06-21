@@ -1,6 +1,6 @@
 package com.knotworking.authexample.data.fake
 
-import com.knotworking.authexample.domain.Logger
+import com.knotworking.authexample.core.Logger
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType

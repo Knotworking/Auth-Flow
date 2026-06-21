@@ -5,7 +5,7 @@ import com.knotworking.authexample.data.network.mapper.toDomain
 import com.knotworking.authexample.data.network.mapper.toDto
 import com.knotworking.authexample.data.network.util.safeApiCall
 import com.knotworking.authexample.domain.AppResult
-import com.knotworking.authexample.domain.Logger
+import com.knotworking.authexample.core.Logger
 import com.knotworking.authexample.domain.model.Credentials
 import com.knotworking.authexample.domain.model.TokenInfo
 import com.knotworking.authexample.domain.repository.AdminRepository

@@ -3,7 +3,6 @@ package com.knotworking.authexample.data.di
 import android.content.Context
 import com.knotworking.authexample.data.fake.FakeBackend
 import com.knotworking.authexample.data.fake.FakeBackendStore
-import com.knotworking.authexample.data.logging.AndroidLogger
 import com.knotworking.authexample.data.network.api.AuthApi
 import com.knotworking.authexample.data.network.api.ProtectedApi
 import com.knotworking.authexample.data.network.authenticator.TokenAuthenticator
@@ -14,7 +13,7 @@ import com.knotworking.authexample.data.repository.ProtectedResourceRepositoryIm
 import com.knotworking.authexample.data.storage.AuthStateHolder
 import com.knotworking.authexample.data.storage.CryptoManager
 import com.knotworking.authexample.data.storage.SessionStoreImpl
-import com.knotworking.authexample.domain.Logger
+import com.knotworking.authexample.core.Logger
 import com.knotworking.authexample.domain.repository.AdminRepository
 import com.knotworking.authexample.domain.repository.AuthRepository
 import com.knotworking.authexample.domain.repository.AuthStateObserver
@@ -32,9 +31,6 @@ import retrofit2.converter.kotlinx.serialization.asConverterFactory
 private val retrofitJson = Json { ignoreUnknownKeys = true }
 
 val dataModule = module {
-
-    // Logger
-    single<Logger> { AndroidLogger() }
 
     // Fake backend
     single {

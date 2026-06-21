@@ -1,7 +1,7 @@
-package com.knotworking.authexample.data.logging
+package com.knotworking.authexample.core.logging
 
 import android.util.Log
-import com.knotworking.authexample.domain.Logger
+import com.knotworking.authexample.core.Logger
 
 class AndroidLogger : Logger {
     override fun d(tag: String, message: String) = Log.d(tag, message).let {}

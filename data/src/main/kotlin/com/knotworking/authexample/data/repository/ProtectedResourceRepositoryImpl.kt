@@ -3,7 +3,7 @@ package com.knotworking.authexample.data.repository
 import com.knotworking.authexample.data.network.api.ProtectedApi
 import com.knotworking.authexample.data.network.util.safeApiCall
 import com.knotworking.authexample.domain.AppResult
-import com.knotworking.authexample.domain.Logger
+import com.knotworking.authexample.core.Logger
 import com.knotworking.authexample.domain.repository.ProtectedResourceRepository
 
 class ProtectedResourceRepositoryImpl(

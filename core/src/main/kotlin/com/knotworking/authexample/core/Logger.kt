@@ -1,4 +1,4 @@
-package com.knotworking.authexample.domain
+package com.knotworking.authexample.core
 
 interface Logger {
     fun d(tag: String, message: String)

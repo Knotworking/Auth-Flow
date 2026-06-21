@@ -6,7 +6,7 @@ import com.knotworking.authexample.data.network.mapper.toAuthSession
 import com.knotworking.authexample.data.network.util.safeApiCall
 import com.knotworking.authexample.domain.AppError
 import com.knotworking.authexample.domain.AppResult
-import com.knotworking.authexample.domain.Logger
+import com.knotworking.authexample.core.Logger
 import com.knotworking.authexample.domain.model.AuthSession
 import com.knotworking.authexample.domain.model.Credentials
 import com.knotworking.authexample.domain.repository.AuthRepository
