@@ -20,6 +20,18 @@ class HomeViewModel(
 ) {
 
     init {
+        observeSession()
+    }
+
+    override fun onIntent(intent: HomeContract.Intent) {
+        when (intent) {
+            HomeContract.Intent.PerformAuthOperation -> handlePerformOperation()
+            HomeContract.Intent.Logout -> handleLogout()
+            HomeContract.Intent.NavigateToDebug -> sendEffect(HomeContract.Effect.NavigateToDebug)
+        }
+    }
+
+    private fun observeSession() {
         viewModelScope.launch {
             sessionStore.sessionFlow.collect { session ->
                 val username = getCurrentUser()?.username ?: ""
@@ -31,14 +43,6 @@ class HomeViewModel(
                     )
                 }
             }
-        }
-    }
-
-    override fun onIntent(intent: HomeContract.Intent) {
-        when (intent) {
-            HomeContract.Intent.PerformAuthOperation -> handlePerformOperation()
-            HomeContract.Intent.Logout -> handleLogout()
-            HomeContract.Intent.NavigateToDebug -> sendEffect(HomeContract.Effect.NavigateToDebug)
         }
     }
 

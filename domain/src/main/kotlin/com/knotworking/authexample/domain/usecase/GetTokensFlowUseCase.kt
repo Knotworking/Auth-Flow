@@ -5,6 +5,6 @@ import com.knotworking.authexample.domain.model.TokenInfo
 import com.knotworking.authexample.domain.repository.AdminRepository
 import kotlinx.coroutines.flow.Flow
 
-class ObserveTokensUseCase(private val adminRepository: AdminRepository) {
+class GetTokensFlowUseCase(private val adminRepository: AdminRepository) {
     operator fun invoke(): Flow<AppResult<List<TokenInfo>>> = adminRepository.tokensFlow
 }

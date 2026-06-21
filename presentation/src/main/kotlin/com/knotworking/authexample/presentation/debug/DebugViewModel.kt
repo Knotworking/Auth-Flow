@@ -5,10 +5,10 @@ import com.knotworking.authexample.domain.AppResult
 import com.knotworking.authexample.domain.model.Credentials
 import com.knotworking.authexample.domain.repository.SessionStore
 import com.knotworking.authexample.domain.usecase.AddUserUseCase
+import com.knotworking.authexample.domain.usecase.GetTokensFlowUseCase
 import com.knotworking.authexample.domain.usecase.GetTokensUseCase
+import com.knotworking.authexample.domain.usecase.GetUsersFlowUseCase
 import com.knotworking.authexample.domain.usecase.GetUsersUseCase
-import com.knotworking.authexample.domain.usecase.ObserveTokensUseCase
-import com.knotworking.authexample.domain.usecase.ObserveUsersUseCase
 import com.knotworking.authexample.domain.usecase.RemoveUserUseCase
 import com.knotworking.authexample.domain.usecase.RevokeTokenUseCase
 import com.knotworking.authexample.presentation.mvi.BaseMviViewModel
@@ -17,11 +17,11 @@ import kotlinx.coroutines.launch
 
 class DebugViewModel(
     private val getUsers: GetUsersUseCase,
-    private val observeUsers: ObserveUsersUseCase,
+    private val getUsersFlow: GetUsersFlowUseCase,
     private val addUser: AddUserUseCase,
     private val removeUser: RemoveUserUseCase,
     private val getTokens: GetTokensUseCase,
-    private val observeTokens: ObserveTokensUseCase,
+    private val getTokensFlow: GetTokensFlowUseCase,
     private val revokeToken: RevokeTokenUseCase,
     private val sessionStore: SessionStore,
 ) : BaseMviViewModel<DebugContract.State, DebugContract.Intent, DebugContract.Effect>(
@@ -29,31 +29,9 @@ class DebugViewModel(
 ) {
 
     init {
-        viewModelScope.launch {
-            observeUsers().collect { result ->
-                updateState {
-                    copy(users = when (result) {
-                        is AppResult.Success -> result.data
-                        is AppResult.Failure -> emptyList()
-                    })
-                }
-            }
-        }
-        viewModelScope.launch {
-            observeTokens().collect { result ->
-                updateState {
-                    copy(tokens = when (result) {
-                        is AppResult.Success -> result.data
-                        is AppResult.Failure -> emptyList()
-                    })
-                }
-            }
-        }
-        viewModelScope.launch {
-            sessionStore.sessionFlow.collect { session ->
-                updateState { copy(currentSession = session) }
-            }
-        }
+        observeUsers()
+        observeTokens()
+        observeSession()
         fetch()
     }
 
@@ -65,6 +43,40 @@ class DebugViewModel(
             DebugContract.Intent.AddUser -> handleAddUser()
             is DebugContract.Intent.RemoveUser -> handleRemoveUser(intent.username)
             is DebugContract.Intent.RevokeToken -> handleRevokeToken(intent.token)
+        }
+    }
+
+    private fun observeUsers() {
+        viewModelScope.launch {
+            getUsersFlow().collect { result ->
+                updateState {
+                    copy(users = when (result) {
+                        is AppResult.Success -> result.data
+                        is AppResult.Failure -> emptyList()
+                    })
+                }
+            }
+        }
+    }
+
+    private fun observeTokens() {
+        viewModelScope.launch {
+            getTokensFlow().collect { result ->
+                updateState {
+                    copy(tokens = when (result) {
+                        is AppResult.Success -> result.data
+                        is AppResult.Failure -> emptyList()
+                    })
+                }
+            }
+        }
+    }
+
+    private fun observeSession() {
+        viewModelScope.launch {
+            sessionStore.sessionFlow.collect { session ->
+                updateState { copy(currentSession = session) }
+            }
         }
     }
 
