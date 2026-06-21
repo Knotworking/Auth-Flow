@@ -2,7 +2,7 @@ package com.knotworking.authexample.presentation.home
 
 import androidx.lifecycle.viewModelScope
 import com.knotworking.authexample.domain.AppError
-import com.knotworking.authexample.domain.AppResult
+import com.knotworking.authexample.domain.Result
 import com.knotworking.authexample.domain.repository.SessionStore
 import com.knotworking.authexample.domain.usecase.GetCurrentUserUseCase
 import com.knotworking.authexample.domain.usecase.LogoutUseCase
@@ -51,8 +51,8 @@ class HomeViewModel(
         updateState { copy(isOperationLoading = true, error = null, operationResult = null) }
         viewModelScope.launch {
             when (val result = performProtectedOperation()) {
-                is AppResult.Success -> updateState { copy(isOperationLoading = false, operationResult = result.data) }
-                is AppResult.Failure -> {
+                is Result.Success -> updateState { copy(isOperationLoading = false, operationResult = result.data) }
+                is Result.Failure -> {
                     val message = when (result.error) {
                         AppError.Auth.Unauthorized,
                         AppError.Auth.SessionExpired,

@@ -2,7 +2,7 @@ package com.knotworking.authexample.presentation.login
 
 import androidx.lifecycle.viewModelScope
 import com.knotworking.authexample.domain.AppError
-import com.knotworking.authexample.domain.AppResult
+import com.knotworking.authexample.domain.Result
 import com.knotworking.authexample.domain.model.Credentials
 import com.knotworking.authexample.domain.usecase.LoginUseCase
 import com.knotworking.authexample.presentation.mvi.BaseMviViewModel
@@ -29,8 +29,8 @@ class LoginViewModel(
         updateState { copy(isLoading = true, error = null) }
         viewModelScope.launch {
             when (val result = login(Credentials(current.usernameInput, current.passwordInput))) {
-                is AppResult.Success -> updateState { copy(isLoading = false) }
-                is AppResult.Failure -> {
+                is Result.Success -> updateState { copy(isLoading = false) }
+                is Result.Failure -> {
                     val message = when (result.error) {
                         AppError.Auth.Unauthorized,
                         AppError.Auth.InvalidCredentials -> "Invalid username or password"

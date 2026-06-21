@@ -5,7 +5,7 @@ import com.knotworking.authexample.data.network.dto.LoginRequestDto
 import com.knotworking.authexample.data.network.mapper.toAuthSession
 import com.knotworking.authexample.data.network.util.safeApiCall
 import com.knotworking.authexample.domain.AppError
-import com.knotworking.authexample.domain.AppResult
+import com.knotworking.authexample.domain.Result
 import com.knotworking.authexample.core.Logger
 import com.knotworking.authexample.domain.model.AuthSession
 import com.knotworking.authexample.domain.model.Credentials
@@ -18,7 +18,7 @@ class AuthRepositoryImpl(
     private val logger: Logger,
 ) : AuthRepository {
 
-    override suspend fun login(credentials: Credentials): AppResult<AuthSession> =
+    override suspend fun login(credentials: Credentials): Result<AuthSession> =
         safeApiCall {
             val response = authApi.login(LoginRequestDto(credentials.username, credentials.password))
             val session = response.toAuthSession(credentials.username)
@@ -27,13 +27,13 @@ class AuthRepositoryImpl(
             session
         }
 
-    override suspend fun logout(): AppResult<Unit> = try {
+    override suspend fun logout(): Result<Unit> = try {
         sessionStore.clear()
         logger.i(TAG, "Logout: session cleared")
-        AppResult.Success(Unit)
+        Result.Success(Unit)
     } catch (e: Exception) {
         logger.e(TAG, "Logout failed", e)
-        AppResult.Failure(AppError.Unknown)
+        Result.Failure(AppError.Unknown)
     }
 
     override suspend fun currentSession(): AuthSession? = sessionStore.read()

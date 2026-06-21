@@ -1,7 +1,7 @@
 package com.knotworking.authexample.presentation.debug
 
 import androidx.lifecycle.viewModelScope
-import com.knotworking.authexample.domain.AppResult
+import com.knotworking.authexample.domain.Result
 import com.knotworking.authexample.domain.model.Credentials
 import com.knotworking.authexample.domain.repository.SessionStore
 import com.knotworking.authexample.domain.usecase.AddUserUseCase
@@ -51,8 +51,8 @@ class DebugViewModel(
             getUsersFlow().collect { result ->
                 updateState {
                     copy(users = when (result) {
-                        is AppResult.Success -> result.data
-                        is AppResult.Failure -> emptyList()
+                        is Result.Success -> result.data
+                        is Result.Failure -> emptyList()
                     })
                 }
             }
@@ -64,8 +64,8 @@ class DebugViewModel(
             getTokensFlow().collect { result ->
                 updateState {
                     copy(tokens = when (result) {
-                        is AppResult.Success -> result.data
-                        is AppResult.Failure -> emptyList()
+                        is Result.Success -> result.data
+                        is Result.Failure -> emptyList()
                     })
                 }
             }
@@ -96,8 +96,8 @@ class DebugViewModel(
         if (s.newUsername.isBlank() || s.newPassword.isBlank()) return
         viewModelScope.launch {
             when (addUser(Credentials(s.newUsername, s.newPassword))) {
-                is AppResult.Success -> updateState { copy(newUsername = "", newPassword = "") }
-                is AppResult.Failure -> updateState { copy(error = "Failed to add user") }
+                is Result.Success -> updateState { copy(newUsername = "", newPassword = "") }
+                is Result.Failure -> updateState { copy(error = "Failed to add user") }
             }
         }
     }
@@ -105,8 +105,8 @@ class DebugViewModel(
     private fun handleRemoveUser(username: String) {
         viewModelScope.launch {
             when (removeUser(username)) {
-                is AppResult.Success -> Unit
-                is AppResult.Failure -> updateState { copy(error = "Failed to remove user") }
+                is Result.Success -> Unit
+                is Result.Failure -> updateState { copy(error = "Failed to remove user") }
             }
         }
     }
@@ -114,8 +114,8 @@ class DebugViewModel(
     private fun handleRevokeToken(token: String) {
         viewModelScope.launch {
             when (revokeToken(token)) {
-                is AppResult.Success -> Unit
-                is AppResult.Failure -> updateState { copy(error = "Failed to revoke token") }
+                is Result.Success -> Unit
+                is Result.Failure -> updateState { copy(error = "Failed to revoke token") }
             }
         }
     }

@@ -1,7 +1,7 @@
 package com.knotworking.authexample.domain.repository
 
-import com.knotworking.authexample.domain.AppResult
+import com.knotworking.authexample.domain.Result
 
 interface ProtectedResourceRepository {
-    suspend fun performOperation(): AppResult<String>
+    suspend fun performOperation(): Result<String>
 }
