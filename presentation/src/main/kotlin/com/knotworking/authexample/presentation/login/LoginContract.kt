@@ -13,10 +13,5 @@ object LoginContract {
         data class UpdateUsername(val value: String) : Intent
         data class UpdatePassword(val value: String) : Intent
         data object Submit : Intent
-        data object DebugClicked : Intent
-    }
-
-    sealed interface Effect {
-        data object NavigateToDebug : Effect
     }
 }

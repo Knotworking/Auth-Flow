@@ -23,7 +23,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,20 +41,12 @@ fun LoginScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
-        viewModel.effects.collect { effect ->
-            when (effect) {
-                LoginContract.Effect.NavigateToDebug -> onNavigateToDebug()
-            }
-        }
-    }
-
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Login") },
                 actions = {
-                    IconButton(onClick = { viewModel.onIntent(LoginContract.Intent.DebugClicked) }) {
+                    IconButton(onClick = onNavigateToDebug) {
                         Icon(Icons.Default.Settings, contentDescription = "Debug settings")
                     }
                 },

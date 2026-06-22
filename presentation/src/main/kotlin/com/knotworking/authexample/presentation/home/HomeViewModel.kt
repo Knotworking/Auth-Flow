@@ -15,7 +15,7 @@ class HomeViewModel(
     private val logout: LogoutUseCase,
     private val getCurrentUser: GetCurrentUserUseCase,
     private val sessionStore: SessionStore,
-) : BaseMviViewModel<HomeContract.State, HomeContract.Intent, HomeContract.Effect>(
+) : BaseMviViewModel<HomeContract.State, HomeContract.Intent>(
     HomeContract.State()
 ) {
 
@@ -27,7 +27,6 @@ class HomeViewModel(
         when (intent) {
             HomeContract.Intent.PerformAuthOperation -> handlePerformOperation()
             HomeContract.Intent.Logout -> handleLogout()
-            HomeContract.Intent.NavigateToDebug -> sendEffect(HomeContract.Effect.NavigateToDebug)
         }
     }
 

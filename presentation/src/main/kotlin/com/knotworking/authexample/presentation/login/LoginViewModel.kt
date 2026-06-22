@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 
 class LoginViewModel(
     private val login: LoginUseCase,
-) : BaseMviViewModel<LoginContract.State, LoginContract.Intent, LoginContract.Effect>(
+) : BaseMviViewModel<LoginContract.State, LoginContract.Intent>(
     LoginContract.State()
 ) {
 
@@ -19,7 +19,6 @@ class LoginViewModel(
             is LoginContract.Intent.UpdateUsername -> updateState { copy(usernameInput = intent.value) }
             is LoginContract.Intent.UpdatePassword -> updateState { copy(passwordInput = intent.value) }
             LoginContract.Intent.Submit -> handleSubmit()
-            LoginContract.Intent.DebugClicked -> sendEffect(LoginContract.Effect.NavigateToDebug)
         }
     }
 

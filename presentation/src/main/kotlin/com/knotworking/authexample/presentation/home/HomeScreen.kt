@@ -27,7 +27,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -54,14 +53,6 @@ fun HomeScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) {
-        viewModel.effects.collect { effect ->
-            when (effect) {
-                HomeContract.Effect.NavigateToDebug -> onNavigateToDebug()
-            }
-        }
-    }
-
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -81,7 +72,7 @@ fun HomeScreen(
                     icon = { Icon(Icons.Default.Settings, contentDescription = null) },
                     onClick = {
                         scope.launch { drawerState.close() }
-                        viewModel.onIntent(HomeContract.Intent.NavigateToDebug)
+                        onNavigateToDebug()
                     },
                     modifier = Modifier.padding(horizontal = 12.dp),
                 )

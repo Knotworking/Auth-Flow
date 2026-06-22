@@ -24,7 +24,7 @@ class DebugViewModel(
     private val getTokensFlow: GetTokensFlowUseCase,
     private val revokeToken: RevokeTokenUseCase,
     private val sessionStore: SessionStore,
-) : BaseMviViewModel<DebugContract.State, DebugContract.Intent, DebugContract.Effect>(
+) : BaseMviViewModel<DebugContract.State, DebugContract.Intent>(
     DebugContract.State()
 ) {
 

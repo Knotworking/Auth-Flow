@@ -16,10 +16,5 @@ object HomeContract {
     sealed interface Intent {
         data object PerformAuthOperation : Intent
         data object Logout : Intent
-        data object NavigateToDebug : Intent
-    }
-
-    sealed interface Effect {
-        data object NavigateToDebug : Effect
     }
 }

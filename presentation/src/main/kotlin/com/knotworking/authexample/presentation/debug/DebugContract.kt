@@ -24,6 +24,4 @@ object DebugContract {
         data class RemoveUser(val username: String) : Intent
         data class RevokeToken(val token: String) : Intent
     }
-
-    sealed interface Effect
 }
