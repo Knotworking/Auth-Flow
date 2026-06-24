@@ -31,7 +31,7 @@ class AuthStateHolder(
         .stateIn(
             scope = scope,
             started = SharingStarted.Eagerly,
-            initialValue = AuthState.Unknown,
+            initialValue = AuthState.Unauthenticated,
         )
 
     override suspend fun forceLogout() {

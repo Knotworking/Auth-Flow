@@ -29,7 +29,6 @@ fun AppNavHost(viewModel: AppViewModel = koinViewModel()) {
                 popUpTo(0) { inclusive = true }
                 launchSingleTop = true
             }
-            AuthState.Unknown -> Unit
         }
     }
 
