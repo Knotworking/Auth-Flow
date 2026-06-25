@@ -32,8 +32,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.knotworking.authexample.presentation.theme.AuthExampleTheme
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import java.time.Instant
@@ -53,7 +55,7 @@ fun HomeScreen(
     HomeScreenContent(
         state = state,
         onIntent = { viewModel.onIntent(it) },
-        navigateToDebug = onNavigateToDebug
+        onNavigateToDebug = onNavigateToDebug,
     )
 }
 
@@ -62,7 +64,7 @@ fun HomeScreen(
 private fun HomeScreenContent(
     state: HomeContract.State,
     onIntent: (HomeContract.Intent) -> Unit,
-    navigateToDebug: () -> Unit
+    onNavigateToDebug: () -> Unit,
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -86,7 +88,7 @@ private fun HomeScreenContent(
                     icon = { Icon(Icons.Default.Settings, contentDescription = null) },
                     onClick = {
                         scope.launch { drawerState.close() }
-                        navigateToDebug()
+                        onNavigateToDebug()
                     },
                     modifier = Modifier.padding(horizontal = 12.dp),
                 )
@@ -192,5 +194,55 @@ private fun HomeScreenContent(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun HomeScreenContentPreview() {
+    AuthExampleTheme {
+        HomeScreenContent(
+            state = HomeContract.State(
+                username = "alice",
+                accessToken = "abcdef1234567890abcdef1234567890",
+                accessExpiresAt = Instant.now().plusSeconds(3600),
+            ),
+            onIntent = {},
+            onNavigateToDebug = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun HomeScreenContentLoadingPreview() {
+    AuthExampleTheme {
+        HomeScreenContent(
+            state = HomeContract.State(
+                username = "alice",
+                accessToken = "abcdef1234567890abcdef1234567890",
+                accessExpiresAt = Instant.now().plusSeconds(3600),
+                isOperationLoading = true,
+            ),
+            onIntent = {},
+            onNavigateToDebug = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun HomeScreenContentResultPreview() {
+    AuthExampleTheme {
+        HomeScreenContent(
+            state = HomeContract.State(
+                username = "alice",
+                accessToken = "abcdef1234567890abcdef1234567890",
+                accessExpiresAt = Instant.now().plusSeconds(3600),
+                operationResult = "Operation succeeded",
+            ),
+            onIntent = {},
+            onNavigateToDebug = {},
+        )
     }
 }

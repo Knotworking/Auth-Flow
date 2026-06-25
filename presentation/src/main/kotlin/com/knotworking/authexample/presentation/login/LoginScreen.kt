@@ -29,11 +29,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.knotworking.authexample.presentation.theme.AuthExampleTheme
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     onNavigateToDebug: () -> Unit,
@@ -41,6 +42,20 @@ fun LoginScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    LoginScreenContent(
+        state = state,
+        onIntent = { viewModel.onIntent(it) },
+        onNavigateToDebug = onNavigateToDebug,
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun LoginScreenContent(
+    state: LoginContract.State,
+    onIntent: (LoginContract.Intent) -> Unit,
+    onNavigateToDebug: () -> Unit,
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -68,7 +83,7 @@ fun LoginScreen(
             ) {
                 OutlinedTextField(
                     value = state.usernameInput,
-                    onValueChange = { viewModel.onIntent(LoginContract.Intent.UpdateUsername(it)) },
+                    onValueChange = { onIntent(LoginContract.Intent.UpdateUsername(it)) },
                     label = { Text("Username") },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -76,7 +91,7 @@ fun LoginScreen(
                 )
                 OutlinedTextField(
                     value = state.passwordInput,
-                    onValueChange = { viewModel.onIntent(LoginContract.Intent.UpdatePassword(it)) },
+                    onValueChange = { onIntent(LoginContract.Intent.UpdatePassword(it)) },
                     label = { Text("Password") },
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
@@ -85,7 +100,7 @@ fun LoginScreen(
                         imeAction = ImeAction.Done,
                     ),
                     keyboardActions = KeyboardActions(
-                        onDone = { viewModel.onIntent(LoginContract.Intent.Submit) }
+                        onDone = { onIntent(LoginContract.Intent.Submit) }
                     ),
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -100,7 +115,7 @@ fun LoginScreen(
 
                 Spacer(Modifier.height(4.dp))
                 Button(
-                    onClick = { viewModel.onIntent(LoginContract.Intent.Submit) },
+                    onClick = { onIntent(LoginContract.Intent.Submit) },
                     enabled = !state.isLoading,
                     modifier = Modifier.fillMaxWidth(),
                 ) {
@@ -111,5 +126,49 @@ fun LoginScreen(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun LoginScreenContentPreview() {
+    AuthExampleTheme {
+        LoginScreenContent(
+            state = LoginContract.State(usernameInput = "alice", passwordInput = "secret"),
+            onIntent = {},
+            onNavigateToDebug = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun LoginScreenContentLoadingPreview() {
+    AuthExampleTheme {
+        LoginScreenContent(
+            state = LoginContract.State(
+                usernameInput = "alice",
+                passwordInput = "secret",
+                isLoading = true,
+            ),
+            onIntent = {},
+            onNavigateToDebug = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun LoginScreenContentErrorPreview() {
+    AuthExampleTheme {
+        LoginScreenContent(
+            state = LoginContract.State(
+                usernameInput = "alice",
+                passwordInput = "secret",
+                error = "Invalid credentials",
+            ),
+            onIntent = {},
+            onNavigateToDebug = {},
+        )
     }
 }
