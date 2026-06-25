@@ -43,13 +43,27 @@ import java.time.format.DateTimeFormatter
 private val displayFormatter: DateTimeFormatter =
     DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yy").withZone(ZoneId.systemDefault())
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     onNavigateToDebug: () -> Unit,
     viewModel: HomeViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    HomeScreenContent(
+        state = state,
+        onIntent = { viewModel.onIntent(it) },
+        navigateToDebug = onNavigateToDebug
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun HomeScreenContent(
+    state: HomeContract.State,
+    onIntent: (HomeContract.Intent) -> Unit,
+    navigateToDebug: () -> Unit
+) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -72,7 +86,7 @@ fun HomeScreen(
                     icon = { Icon(Icons.Default.Settings, contentDescription = null) },
                     onClick = {
                         scope.launch { drawerState.close() }
-                        onNavigateToDebug()
+                        navigateToDebug()
                     },
                     modifier = Modifier.padding(horizontal = 12.dp),
                 )
@@ -81,7 +95,7 @@ fun HomeScreen(
                     selected = false,
                     onClick = {
                         scope.launch { drawerState.close() }
-                        viewModel.onIntent(HomeContract.Intent.Logout)
+                        onIntent(HomeContract.Intent.Logout)
                     },
                     modifier = Modifier.padding(horizontal = 12.dp),
                 )
@@ -113,8 +127,10 @@ fun HomeScreen(
                         modifier = Modifier.padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(6.dp),
                     ) {
-                        Text("Session", style = MaterialTheme.typography.titleSmall,
-                            color = MaterialTheme.colorScheme.primary)
+                        Text(
+                            "Session", style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
                         if (state.accessToken.isNotEmpty()) {
                             Text(
                                 text = state.accessToken.take(20) + "…",
@@ -140,7 +156,7 @@ fun HomeScreen(
 
                 // Authenticated operation
                 Button(
-                    onClick = { viewModel.onIntent(HomeContract.Intent.PerformAuthOperation) },
+                    onClick = { onIntent(HomeContract.Intent.PerformAuthOperation) },
                     enabled = !state.isOperationLoading,
                     modifier = Modifier.fillMaxWidth(),
                 ) {
@@ -154,17 +170,22 @@ fun HomeScreen(
                 if (state.operationResult != null) {
                     Card(modifier = Modifier.fillMaxWidth()) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            Text("Result", style = MaterialTheme.typography.titleSmall,
-                                color = MaterialTheme.colorScheme.primary)
+                            Text(
+                                "Result", style = MaterialTheme.typography.titleSmall,
+                                color = MaterialTheme.colorScheme.primary
+                            )
                             Spacer(Modifier.height(4.dp))
-                            Text(state.operationResult!!, style = MaterialTheme.typography.bodyMedium)
+                            Text(
+                                state.operationResult!!,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
                         }
                     }
                 }
 
-                if (state.error != null) {
+                state.error?.let { error ->
                     Text(
-                        text = state.error!!,
+                        text = error,
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodySmall,
                     )
