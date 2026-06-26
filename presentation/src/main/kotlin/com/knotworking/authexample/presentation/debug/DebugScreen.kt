@@ -27,11 +27,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.knotworking.authexample.domain.model.AuthSession
 import com.knotworking.authexample.domain.model.Credentials
 import com.knotworking.authexample.domain.model.TokenInfo
+import com.knotworking.authexample.presentation.theme.AuthExampleTheme
 import org.koin.androidx.compose.koinViewModel
 import java.time.Instant
 import java.time.ZoneId
@@ -40,17 +42,28 @@ import java.time.format.DateTimeFormatter
 private val displayFormatter: DateTimeFormatter =
     DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yy").withZone(ZoneId.systemDefault())
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DebugScreen(viewModel: DebugViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    DebugScreenContent(
+        state = state,
+        onIntent = { viewModel.onIntent(it) },
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DebugScreenContent(
+    state: DebugContract.State,
+    onIntent: (DebugContract.Intent) -> Unit,
+) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Debug") },
                 actions = {
-                    TextButton(onClick = { viewModel.onIntent(DebugContract.Intent.Refresh) }) {
+                    TextButton(onClick = { onIntent(DebugContract.Intent.Refresh) }) {
                         Text("Refresh")
                     }
                 },
@@ -91,10 +104,10 @@ fun DebugScreen(viewModel: DebugViewModel = koinViewModel()) {
                 items(state.users, key = { it.username }) { user ->
                     UserRow(
                         credentials = user,
-                        onRemove = { viewModel.onIntent(DebugContract.Intent.RemoveUser(user.username)) },
+                        onRemove = { onIntent(DebugContract.Intent.RemoveUser(user.username)) },
                     )
                 }
-                item { AddUserRow(state = state, onIntent = { viewModel.onIntent(it) }) }
+                item { AddUserRow(state = state, onIntent = onIntent) }
 
                 // --- Tokens ---
                 item { Spacer(Modifier.height(8.dp)) }
@@ -102,7 +115,7 @@ fun DebugScreen(viewModel: DebugViewModel = koinViewModel()) {
                 items(state.tokens, key = { it.token }) { token ->
                     TokenRow(
                         token = token,
-                        onRevoke = { viewModel.onIntent(DebugContract.Intent.RevokeToken(token.token)) },
+                        onRevoke = { onIntent(DebugContract.Intent.RevokeToken(token.token)) },
                     )
                 }
                 item { Spacer(Modifier.height(16.dp)) }
@@ -251,6 +264,73 @@ private fun LabeledValue(label: String, value: String) {
             text = value,
             style = MaterialTheme.typography.bodySmall,
             fontFamily = FontFamily.Monospace,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun DebugScreenContentPreview() {
+    AuthExampleTheme {
+        DebugScreenContent(
+            state = DebugContract.State(
+                users = listOf(
+                    Credentials(username = "alice", password = "password123"),
+                    Credentials(username = "bob", password = "hunter2"),
+                ),
+                tokens = listOf(
+                    TokenInfo(
+                        token = "tok-valid-aaaa",
+                        type = "access",
+                        username = "alice",
+                        expiresAt = Instant.now().plusSeconds(3600),
+                        revoked = false,
+                    ),
+                    TokenInfo(
+                        token = "tok-expired-bbbb",
+                        type = "access",
+                        username = "bob",
+                        expiresAt = Instant.now().minusSeconds(60),
+                        revoked = false,
+                    ),
+                    TokenInfo(
+                        token = "tok-revoked-cccc",
+                        type = "refresh",
+                        username = "alice",
+                        expiresAt = Instant.now().plusSeconds(7200),
+                        revoked = true,
+                    ),
+                ),
+                currentSession = AuthSession(
+                    username = "alice",
+                    accessToken = "abcdef1234567890abcdef1234567890",
+                    refreshToken = "refresh-token-xyz",
+                    accessExpiresAt = Instant.now().plusSeconds(3600),
+                ),
+            ),
+            onIntent = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun DebugScreenContentLoadingPreview() {
+    AuthExampleTheme {
+        DebugScreenContent(
+            state = DebugContract.State(isLoading = true),
+            onIntent = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun DebugScreenContentEmptyPreview() {
+    AuthExampleTheme {
+        DebugScreenContent(
+            state = DebugContract.State(),
+            onIntent = {},
         )
     }
 }
