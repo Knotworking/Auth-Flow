@@ -49,7 +49,6 @@ fun LoginScreen(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun LoginScreenContent(
     state: LoginContract.State,
@@ -57,16 +56,7 @@ private fun LoginScreenContent(
     onNavigateToDebug: () -> Unit,
 ) {
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Login") },
-                actions = {
-                    IconButton(onClick = onNavigateToDebug) {
-                        Icon(Icons.Default.Settings, contentDescription = "Debug settings")
-                    }
-                },
-            )
-        }
+        topBar = { LoginTopBar(onNavigateToDebug = onNavigateToDebug) }
     ) { padding ->
         Box(
             modifier = Modifier
@@ -81,50 +71,166 @@ private fun LoginScreenContent(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                OutlinedTextField(
-                    value = state.usernameInput,
-                    onValueChange = { onIntent(LoginContract.Intent.UpdateUsername(it)) },
-                    label = { Text("Username") },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                    modifier = Modifier.fillMaxWidth(),
+                LoginFormFields(
+                    username = state.usernameInput,
+                    password = state.passwordInput,
+                    onUsernameChange = { onIntent(LoginContract.Intent.UpdateUsername(it)) },
+                    onPasswordChange = { onIntent(LoginContract.Intent.UpdatePassword(it)) },
+                    onSubmit = { onIntent(LoginContract.Intent.Submit) },
+                    enabled = !state.isLoading,
                 )
-                OutlinedTextField(
-                    value = state.passwordInput,
-                    onValueChange = { onIntent(LoginContract.Intent.UpdatePassword(it)) },
-                    label = { Text("Password") },
-                    singleLine = true,
-                    visualTransformation = PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.Done,
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = { onIntent(LoginContract.Intent.Submit) }
-                    ),
-                    modifier = Modifier.fillMaxWidth(),
-                )
-
-                state.error?.let { error ->
-                    Text(
-                        text = error,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                }
-
-                Spacer(Modifier.height(4.dp))
-                Button(
+                state.error?.let { LoginErrorMessage(error = it) }
+                LoginButton(
                     onClick = { onIntent(LoginContract.Intent.Submit) },
                     enabled = !state.isLoading,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text("Login")
-                }
-                if (state.isLoading) {
-                    CircularProgressIndicator()
-                }
+                    isLoading = state.isLoading,
+                )
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun LoginTopBar(onNavigateToDebug: () -> Unit) {
+    TopAppBar(
+        title = { Text("Login") },
+        actions = {
+            IconButton(onClick = onNavigateToDebug) {
+                Icon(Icons.Default.Settings, contentDescription = "Debug settings")
+            }
+        },
+    )
+}
+
+@Preview
+@Composable
+private fun LoginTopBarPreview() {
+    AuthExampleTheme {
+        LoginTopBar(onNavigateToDebug = {})
+    }
+}
+
+@Composable
+private fun LoginFormFields(
+    username: String,
+    password: String,
+    onUsernameChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onSubmit: () -> Unit,
+    enabled: Boolean,
+) {
+    OutlinedTextField(
+        value = username,
+        onValueChange = onUsernameChange,
+        label = { Text("Username") },
+        singleLine = true,
+        enabled = enabled,
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+        modifier = Modifier.fillMaxWidth(),
+    )
+    OutlinedTextField(
+        value = password,
+        onValueChange = onPasswordChange,
+        label = { Text("Password") },
+        singleLine = true,
+        enabled = enabled,
+        visualTransformation = PasswordVisualTransformation(),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password,
+            imeAction = ImeAction.Done,
+        ),
+        keyboardActions = KeyboardActions(onDone = { onSubmit() }),
+        modifier = Modifier.fillMaxWidth(),
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun LoginFormFieldsEmptyPreview() {
+    AuthExampleTheme {
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            LoginFormFields(
+                username = "",
+                password = "",
+                onUsernameChange = {},
+                onPasswordChange = {},
+                onSubmit = {},
+                enabled = true,
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun LoginFormFieldsFilledPreview() {
+    AuthExampleTheme {
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            LoginFormFields(
+                username = "alice",
+                password = "secret",
+                onUsernameChange = {},
+                onPasswordChange = {},
+                onSubmit = {},
+                enabled = true,
+            )
+        }
+    }
+}
+
+@Composable
+private fun LoginErrorMessage(error: String) {
+    Text(
+        text = error,
+        color = MaterialTheme.colorScheme.error,
+        style = MaterialTheme.typography.bodySmall,
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun LoginErrorMessagePreview() {
+    AuthExampleTheme {
+        LoginErrorMessage(error = "Invalid credentials")
+    }
+}
+
+@Composable
+private fun LoginButton(
+    onClick: () -> Unit,
+    enabled: Boolean,
+    isLoading: Boolean,
+) {
+    Spacer(Modifier.height(4.dp))
+    Button(
+        onClick = onClick,
+        enabled = enabled,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Text("Login")
+    }
+    if (isLoading) {
+        CircularProgressIndicator()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun LoginButtonPreview() {
+    AuthExampleTheme {
+        Column(modifier = Modifier.padding(horizontal = 32.dp)) {
+            LoginButton(onClick = {}, enabled = true, isLoading = false)
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun LoginButtonLoadingPreview() {
+    AuthExampleTheme {
+        Column(modifier = Modifier.padding(horizontal = 32.dp)) {
+            LoginButton(onClick = {}, enabled = false, isLoading = true)
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.knotworking.authexample.presentation.home
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -59,7 +60,6 @@ fun HomeScreen(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeScreenContent(
     state: HomeContract.State,
@@ -72,49 +72,21 @@ private fun HomeScreenContent(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            ModalDrawerSheet {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("AuthExample", style = MaterialTheme.typography.headlineSmall)
-                    Text(
-                        text = state.username,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-                HorizontalDivider()
-                NavigationDrawerItem(
-                    label = { Text("Developer settings") },
-                    selected = false,
-                    icon = { Icon(Icons.Default.Settings, contentDescription = null) },
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        onNavigateToDebug()
-                    },
-                    modifier = Modifier.padding(horizontal = 12.dp),
-                )
-                NavigationDrawerItem(
-                    label = { Text("Logout") },
-                    selected = false,
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        onIntent(HomeContract.Intent.Logout)
-                    },
-                    modifier = Modifier.padding(horizontal = 12.dp),
-                )
-            }
+            HomeDrawerSheet(
+                username = state.username,
+                onNavigateToDebug = {
+                    scope.launch { drawerState.close() }
+                    onNavigateToDebug()
+                },
+                onLogout = {
+                    scope.launch { drawerState.close() }
+                    onIntent(HomeContract.Intent.Logout)
+                },
+            )
         },
     ) {
         Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text("Home") },
-                    navigationIcon = {
-                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Open menu")
-                        }
-                    },
-                )
-            }
+            topBar = { HomeTopBar(onOpenDrawer = { scope.launch { drawerState.open() } }) }
         ) { padding ->
             Column(
                 modifier = Modifier
@@ -123,77 +95,210 @@ private fun HomeScreenContent(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                // Session info card
-                Card(modifier = Modifier.fillMaxWidth()) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(6.dp),
-                    ) {
-                        Text(
-                            "Session", style = MaterialTheme.typography.titleSmall,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        if (state.accessToken.isNotEmpty()) {
-                            Text(
-                                text = state.accessToken.take(20) + "…",
-                                style = MaterialTheme.typography.bodySmall,
-                                fontFamily = FontFamily.Monospace,
-                            )
-                            val expiresAt = state.accessExpiresAt
-                            if (expiresAt != null) {
-                                val isExpired = Instant.now().isAfter(expiresAt)
-                                Text(
-                                    text = "Expires: ${displayFormatter.format(expiresAt)}" +
-                                            if (isExpired) " — EXPIRED" else "",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = if (isExpired) MaterialTheme.colorScheme.error
-                                    else MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                            }
-                        } else {
-                            Text("No session data", style = MaterialTheme.typography.bodySmall)
-                        }
-                    }
-                }
-
-                // Authenticated operation
-                Button(
+                SessionCard(accessToken = state.accessToken, accessExpiresAt = state.accessExpiresAt)
+                AuthOperationSection(
+                    isLoading = state.isOperationLoading,
                     onClick = { onIntent(HomeContract.Intent.PerformAuthOperation) },
-                    enabled = !state.isOperationLoading,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text("Perform authenticated operation")
-                }
-
-                if (state.isOperationLoading) {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-                }
-
-                if (state.operationResult != null) {
-                    Card(modifier = Modifier.fillMaxWidth()) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(
-                                "Result", style = MaterialTheme.typography.titleSmall,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                            Spacer(Modifier.height(4.dp))
-                            Text(
-                                state.operationResult!!,
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-                    }
-                }
-
-                state.error?.let { error ->
-                    Text(
-                        text = error,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                }
+                )
+                state.operationResult?.let { OperationResultCard(result = it) }
+                state.error?.let { HomeErrorMessage(error = it) }
             }
         }
+    }
+}
+
+@Composable
+private fun HomeDrawerSheet(
+    username: String,
+    onNavigateToDebug: () -> Unit,
+    onLogout: () -> Unit,
+) {
+    ModalDrawerSheet {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text("AuthExample", style = MaterialTheme.typography.headlineSmall)
+            Text(
+                text = username,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        HorizontalDivider()
+        NavigationDrawerItem(
+            label = { Text("Developer settings") },
+            selected = false,
+            icon = { Icon(Icons.Default.Settings, contentDescription = null) },
+            onClick = onNavigateToDebug,
+            modifier = Modifier.padding(horizontal = 12.dp),
+        )
+        NavigationDrawerItem(
+            label = { Text("Logout") },
+            selected = false,
+            onClick = onLogout,
+            modifier = Modifier.padding(horizontal = 12.dp),
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun HomeDrawerSheetPreview() {
+    AuthExampleTheme {
+        HomeDrawerSheet(
+            username = "alice",
+            onNavigateToDebug = {},
+            onLogout = {},
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun HomeTopBar(onOpenDrawer: () -> Unit) {
+    TopAppBar(
+        title = { Text("Home") },
+        navigationIcon = {
+            IconButton(onClick = onOpenDrawer) {
+                Icon(Icons.Default.Menu, contentDescription = "Open menu")
+            }
+        },
+    )
+}
+
+@Preview
+@Composable
+private fun HomeTopBarPreview() {
+    AuthExampleTheme {
+        HomeTopBar(onOpenDrawer = {})
+    }
+}
+
+@Composable
+private fun SessionCard(accessToken: String, accessExpiresAt: Instant?) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            Text(
+                "Session",
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.primary,
+            )
+            if (accessToken.isNotEmpty()) {
+                Text(
+                    text = accessToken.take(20) + "…",
+                    style = MaterialTheme.typography.bodySmall,
+                    fontFamily = FontFamily.Monospace,
+                )
+                if (accessExpiresAt != null) {
+                    val isExpired = Instant.now().isAfter(accessExpiresAt)
+                    Text(
+                        text = "Expires: ${displayFormatter.format(accessExpiresAt)}" +
+                                if (isExpired) " — EXPIRED" else "",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (isExpired) MaterialTheme.colorScheme.error
+                        else MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            } else {
+                Text("No session data", style = MaterialTheme.typography.bodySmall)
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SessionCardPreview() {
+    AuthExampleTheme {
+        SessionCard(
+            accessToken = "abcdef1234567890abcdef1234567890",
+            accessExpiresAt = Instant.now().plusSeconds(3600),
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SessionCardEmptyPreview() {
+    AuthExampleTheme {
+        SessionCard(accessToken = "", accessExpiresAt = null)
+    }
+}
+
+@Composable
+private fun AuthOperationSection(isLoading: Boolean, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        enabled = !isLoading,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Text("Perform authenticated operation")
+    }
+    if (isLoading) {
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun AuthOperationSectionPreview() {
+    AuthExampleTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            AuthOperationSection(isLoading = false, onClick = {})
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun AuthOperationSectionLoadingPreview() {
+    AuthExampleTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            AuthOperationSection(isLoading = true, onClick = {})
+        }
+    }
+}
+
+@Composable
+private fun OperationResultCard(result: String) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                "Result",
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.primary,
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(result, style = MaterialTheme.typography.bodyMedium)
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun OperationResultCardPreview() {
+    AuthExampleTheme {
+        OperationResultCard(result = "Operation succeeded")
+    }
+}
+
+@Composable
+private fun HomeErrorMessage(error: String) {
+    Text(
+        text = error,
+        color = MaterialTheme.colorScheme.error,
+        style = MaterialTheme.typography.bodySmall,
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun HomeErrorMessagePreview() {
+    AuthExampleTheme {
+        HomeErrorMessage(error = "Something went wrong")
     }
 }
 
